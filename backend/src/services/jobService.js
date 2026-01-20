@@ -17,7 +17,7 @@ const MOCK_JOBS = [
         skills: ['React', 'TypeScript', 'Redux', 'Node.js', 'AWS'],
         salary: '$150,000 - $180,000',
         postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-1',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20React%20Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=TC&background=6366f1&color=fff'
     },
     {
@@ -31,7 +31,7 @@ const MOCK_JOBS = [
         skills: ['Python', 'Django', 'React', 'PostgreSQL', 'Docker'],
         salary: '$120,000 - $150,000',
         postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-2',
+        applyUrl: 'https://www.indeed.com/jobs?q=Full+Stack+Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=SX&background=10b981&color=fff'
     },
     {
@@ -45,7 +45,7 @@ const MOCK_JOBS = [
         skills: ['React', 'Vue.js', 'CSS', 'Figma', 'JavaScript'],
         salary: '$90,000 - $120,000',
         postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-3',
+        applyUrl: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Frontend+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=DS&background=f59e0b&color=fff'
     },
     {
@@ -59,7 +59,7 @@ const MOCK_JOBS = [
         skills: ['Node.js', 'MongoDB', 'Redis', 'AWS', 'Microservices'],
         salary: '$130,000 - $160,000',
         postedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-4',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Backend%20Developer%20Node.js',
         companyLogo: 'https://ui-avatars.com/api/?name=CS&background=8b5cf6&color=fff'
     },
     {
@@ -73,7 +73,7 @@ const MOCK_JOBS = [
         skills: ['Python', 'SQL', 'Pandas', 'NumPy', 'Git'],
         salary: '$70,000 - $90,000',
         postedDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-5',
+        applyUrl: 'https://www.indeed.com/jobs?q=Junior+Python+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=DT&background=ec4899&color=fff'
     },
     {
@@ -87,7 +87,7 @@ const MOCK_JOBS = [
         skills: ['Kubernetes', 'Terraform', 'AWS', 'Docker', 'Jenkins'],
         salary: '$140,000 - $170,000',
         postedDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-6',
+        applyUrl: 'https://www.dice.com/jobs?q=DevOps+Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=IC&background=14b8a6&color=fff'
     },
     {
@@ -101,7 +101,7 @@ const MOCK_JOBS = [
         skills: ['Figma', 'UI/UX', 'Prototyping', 'User Research', 'Design Systems'],
         salary: '$100,000 - $130,000',
         postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-7',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=UX%20Designer',
         companyLogo: 'https://ui-avatars.com/api/?name=PF&background=f43f5e&color=fff'
     },
     {
@@ -115,7 +115,7 @@ const MOCK_JOBS = [
         skills: ['Python', 'TensorFlow', 'PyTorch', 'Machine Learning', 'NLP'],
         salary: '$160,000 - $200,000',
         postedDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-8',
+        applyUrl: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Machine+Learning+Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=AI&background=3b82f6&color=fff'
     },
     {
@@ -129,7 +129,7 @@ const MOCK_JOBS = [
         skills: ['React Native', 'TypeScript', 'Redux', 'iOS', 'Android'],
         salary: '$110,000 - $140,000',
         postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-9',
+        applyUrl: 'https://www.indeed.com/jobs?q=React+Native+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=MF&background=84cc16&color=fff'
     },
     {
@@ -143,7 +143,7 @@ const MOCK_JOBS = [
         skills: ['Python', 'Spark', 'Airflow', 'SQL', 'Snowflake'],
         salary: '$125,000 - $155,000',
         postedDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-10',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Data%20Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=BD&background=0891b2&color=fff'
     },
     {
@@ -157,7 +157,7 @@ const MOCK_JOBS = [
         skills: ['JavaScript', 'React', 'Node.js', 'Git', 'Problem Solving'],
         salary: '$30/hour',
         postedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-11',
+        applyUrl: 'https://www.indeed.com/jobs?q=Software+Engineering+Intern',
         companyLogo: 'https://ui-avatars.com/api/?name=TS&background=7c3aed&color=fff'
     },
     {
@@ -171,7 +171,7 @@ const MOCK_JOBS = [
         skills: ['Java', 'Spring Boot', 'Microservices', 'PostgreSQL', 'Oracle'],
         salary: '$140,000 - $175,000',
         postedDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-12',
+        applyUrl: 'https://www.dice.com/jobs?q=Senior+Backend+Developer+Java',
         companyLogo: 'https://ui-avatars.com/api/?name=ES&background=059669&color=fff'
     },
     {
@@ -185,7 +185,7 @@ const MOCK_JOBS = [
         skills: ['WordPress', 'HTML', 'CSS', 'JavaScript', 'PHP'],
         salary: '$35/hour',
         postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-13',
+        applyUrl: 'https://www.indeed.com/jobs?q=Part+Time+Web+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=LB&background=d946ef&color=fff'
     },
     {
@@ -199,7 +199,7 @@ const MOCK_JOBS = [
         skills: ['Go', 'gRPC', 'Kubernetes', 'Docker', 'PostgreSQL'],
         salary: '$135,000 - $165,000',
         postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-14',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Golang%20Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=HP&background=06b6d4&color=fff'
     },
     {
@@ -213,7 +213,7 @@ const MOCK_JOBS = [
         skills: ['React', 'TypeScript', 'Leadership', 'Architecture', 'Mentoring'],
         salary: '$170,000 - $200,000',
         postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://example.com/apply/job-15',
+        applyUrl: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Technical+Lead+Frontend',
         companyLogo: 'https://ui-avatars.com/api/?name=SU&background=ea580c&color=fff'
     }
 ];
