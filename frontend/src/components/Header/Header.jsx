@@ -1,4 +1,5 @@
 import './Header.css'
+import ThemeToggle from '../ThemeToggle/ThemeToggle'
 
 export default function Header({ activeTab, onTabChange, onResumeClick, onAIClick, hasResume }) {
     return (
@@ -34,6 +35,8 @@ export default function Header({ activeTab, onTabChange, onResumeClick, onAIClic
                 </div>
 
                 <div className="header-right">
+                    <ThemeToggle />
+
                     <button
                         className="header-btn ai-btn"
                         onClick={onAIClick}
