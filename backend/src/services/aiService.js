@@ -301,6 +301,33 @@ Be conversational and helpful!`;
 async function fallbackChat(message, jobs, resumeText) {
     const lowerMessage = message.toLowerCase();
 
+    // Personal questions - introduce as Faraz
+    if (lowerMessage.includes('your name') || lowerMessage.includes('who are you') || lowerMessage.includes('what are you')) {
+        return {
+            type: 'help',
+            message: "Hi! I'm Faraz 👋, your friendly AI job search assistant. I'm here to help you find the perfect job! Ask me about remote jobs, specific skills, or how to use this platform.",
+            jobs: []
+        };
+    }
+
+    // Greetings
+    if (lowerMessage.match(/^(hi|hello|hey|hola|namaste)/)) {
+        return {
+            type: 'help',
+            message: "Hey there! 😊 I'm Faraz, your job search buddy. How can I help you find your dream job today?",
+            jobs: []
+        };
+    }
+
+    // General conversation
+    if (lowerMessage.includes('how are you') || lowerMessage.includes('whats up') || lowerMessage.includes("what's up")) {
+        return {
+            type: 'help',
+            message: "I'm doing great, thanks for asking! 🌟 I'm excited to help you find amazing job opportunities. What kind of role are you looking for?",
+            jobs: []
+        };
+    }
+
     console.log(`[AI Chat Fallback] Processing message: "${message}"`);
     console.log(`[AI Chat Fallback] Total jobs available: ${jobs?.length || 0}`);
 
