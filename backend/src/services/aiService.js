@@ -1,17 +1,17 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-let openai = null;
+let genAI = null;
+let model = null;
 
-// Initialize OpenAI client
+// Initialize Google Gemini AI
 export function initAI() {
-    if (process.env.OPENAI_API_KEY) {
-        openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY
-        });
-        console.log('OpenAI initialized');
+    if (process.env.GEMINI_API_KEY) {
+        genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        console.log('Google Gemini AI initialized (gemini-1.5-flash)');
         return true;
     }
-    console.log('No OpenAI API key configured, using fallback scoring');
+    console.log('No Gemini API key configured, using fallback scoring');
     return false;
 }
 
@@ -119,25 +119,53 @@ function fallbackScoring(resumeText, job) {
         titleScore * 0.25
     );
 
-    // Generate explanation
+    // Generate detailed explanation
     const matchedSkills = jobSkills.filter(s =>
         resumeSkills.some(rs => rs.toLowerCase() === s.toLowerCase())
     );
 
     const explanation = [];
+
+    // Skills match
     if (matchedSkills.length > 0) {
-        explanation.push(`Matching skills: ${matchedSkills.join(', ')}`);
+        const skillsText = matchedSkills.slice(0, 5).join(', ');
+        if (matchedSkills.length > 5) {
+            explanation.push(`Strong match on ${matchedSkills.length} skills including ${skillsText}, and more`);
+        } else if (matchedSkills.length > 2) {
+            explanation.push(`Good skill alignment: ${skillsText}`);
+        } else {
+            explanation.push(`Matches key skills: ${skillsText}`);
+        }
+    } else if (jobSkills.length > 0) {
+        explanation.push(`Limited skill overlap - consider learning ${jobSkills.slice(0, 2).join(', ')}`);
     }
-    if (experienceScore >= 70) {
-        explanation.push('Experience level aligns well');
+
+    // Experience match
+    if (experienceScore >= 80) {
+        explanation.push('Your experience level is an excellent fit');
+    } else if (experienceScore >= 60) {
+        explanation.push('Experience aligns with requirements');
+    } else if (experienceScore >= 40) {
+        explanation.push('Some experience gap, but achievable with learning');
     }
-    if (titleScore >= 60) {
-        explanation.push('Job title matches your profile');
+
+    // Title match
+    if (titleScore >= 70) {
+        explanation.push('Job title closely matches your background');
+    } else if (titleScore >= 50) {
+        explanation.push('Related role to your experience');
+    }
+
+    // Overall score context
+    if (score >= 80) {
+        explanation.unshift('🎯 Excellent match!');
+    } else if (score >= 60) {
+        explanation.unshift('✓ Good match');
     }
 
     return {
         score: Math.max(0, Math.min(100, score)),
-        explanation: explanation.length > 0 ? explanation.join('. ') : 'Based on general keyword matching',
+        explanation: explanation.length > 0 ? explanation.join('. ') : 'This role could be a fit based on your profile',
         matchedSkills: matchedSkills,
         resumeSkills: resumeSkills.slice(0, 10)
     };
@@ -145,41 +173,58 @@ function fallbackScoring(resumeText, job) {
 
 // Score job match using AI
 export async function scoreJobMatch(resumeText, job) {
-    // Always use fallback for speed in this demo
-    // AI can be slow for many jobs
+    // Try Gemini AI first, fallback to rule-based
+    if (model) {
+        try {
+            return await geminiScoring(resumeText, job);
+        } catch (error) {
+            console.error('Gemini AI error, using fallback:', error.message || error);
+            return fallbackScoring(resumeText, job);
+        }
+    }
     return fallbackScoring(resumeText, job);
+}
 
-    // AI-powered scoring (can be enabled for more accuracy)
-    /*
-    if (!openai) {
-      return fallbackScoring(resumeText, job);
+// Gemini AI-powered job scoring
+async function geminiScoring(resumeText, job) {
+    const prompt = `You are a job matching expert. Score how well this resume matches the job posting on a scale of 0-100.
+
+Resume:
+${resumeText.substring(0, 2000)}
+
+Job:
+Title: ${job.title}
+Company: ${job.company}
+Location: ${job.location}
+Description: ${job.description.substring(0, 1000)}
+Required Skills: ${job.skills.join(', ')}
+
+Return ONLY a JSON object with this exact format (no markdown, no code blocks):
+{
+  "score": <number 0-100>,
+  "explanation": "<brief 1-sentence reason>",
+  "matchedSkills": ["skill1", "skill2"]
+}`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Parse JSON from response (handle markdown code blocks if present)
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return {
+            score: Math.max(0, Math.min(100, parsed.score || 0)),
+            explanation: parsed.explanation || 'AI-based matching',
+            matchedSkills: parsed.matchedSkills || [],
+            resumeSkills: extractSkills(resumeText).slice(0, 10)
+        };
     }
-    
-    try {
-      const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a job matching expert. Score how well a resume matches a job posting.
-              Return JSON: { "score": 0-100, "explanation": "brief reason", "matchedSkills": ["skill1", "skill2"] }`
-          },
-          {
-            role: 'user',
-            content: `Resume:\n${resumeText.substring(0, 2000)}\n\nJob:\nTitle: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description.substring(0, 1000)}`
-          }
-        ],
-        temperature: 0.3,
-        max_tokens: 200
-      });
-      
-      const result = JSON.parse(response.choices[0].message.content);
-      return result;
-    } catch (error) {
-      console.error('AI scoring error:', error);
-      return fallbackScoring(resumeText, job);
-    }
-    */
+
+    // Fallback if JSON parsing fails
+    console.warn('Failed to parse Gemini response, using fallback');
+    return fallbackScoring(resumeText, job);
 }
 
 // Score multiple jobs
@@ -201,7 +246,52 @@ export async function scoreJobsInBatch(resumeText, jobs) {
 
 // Process chat messages
 export async function processChat(message, jobs, resumeText) {
+    // Try Gemini AI for intelligent responses
+    if (model) {
+        try {
+            return await geminiChat(message, jobs, resumeText);
+        } catch (error) {
+            console.error('Gemini chat error, using fallback:', error.message || error);
+            return fallbackChat(message, jobs, resumeText);
+        }
+    }
+    return fallbackChat(message, jobs, resumeText);
+}
+
+// Gemini AI-powered chat
+async function geminiChat(message, jobs, resumeText) {
+    const jobsList = jobs.slice(0, 10).map(j =>
+        `- ${j.title} at ${j.company} (${j.location}${j.workMode === 'Remote' ? ', Remote' : ''})`
+    ).join('\n');
+
+    const prompt = `You are a helpful job search assistant for an AI-powered job tracker app in India.
+
+User's question: "${message}"
+
+${jobs.length > 0 ? `Available jobs (showing ${Math.min(10, jobs.length)} of ${jobs.length}):\n${jobsList}` : 'No jobs currently loaded.'}
+
+${resumeText ? 'The user has uploaded their resume for AI matching.' : 'The user has not uploaded a resume yet.'}
+
+If the user is asking about specific jobs (e.g., "remote React jobs", "senior positions"), recommend relevant ones from the list.
+If asking about app features, provide helpful guidance.
+Be friendly, concise, and helpful. Keep responses to 2-3 sentences max.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+
+    return {
+        type: 'help',
+        message: response.text(),
+        jobs: []
+    };
+}
+
+// Fallback chat without AI
+async function fallbackChat(message, jobs, resumeText) {
     const lowerMessage = message.toLowerCase();
+
+    console.log(`[AI Chat Fallback] Processing message: "${message}"`);
+    console.log(`[AI Chat Fallback] Total jobs available: ${jobs?.length || 0}`);
 
     // Product questions - handled without AI
     const productQuestions = [
@@ -240,16 +330,21 @@ export async function processChat(message, jobs, resumeText) {
     // Remote jobs
     if (lowerMessage.includes('remote')) {
         filteredJobs = filteredJobs.filter(j => j.workMode === 'Remote');
+
     }
 
     // Skill-based queries
     for (const [category, skills] of Object.entries(SKILL_CATEGORIES)) {
         for (const skill of skills) {
             if (lowerMessage.includes(skill)) {
-                filteredJobs = filteredJobs.filter(j =>
-                    j.skills.some(s => s.toLowerCase().includes(skill)) ||
-                    j.description.toLowerCase().includes(skill)
-                );
+                filteredJobs = filteredJobs.filter(j => {
+                    const jobSkills = j.skills || [];
+                    const hasSkillInArray = jobSkills.some(s => s.toLowerCase().includes(skill));
+                    const hasSkillInDesc = j.description?.toLowerCase().includes(skill) || false;
+                    const hasSkillInTitle = j.title?.toLowerCase().includes(skill) || false;
+                    return hasSkillInArray || hasSkillInDesc || hasSkillInTitle;
+                });
+
                 break;
             }
         }

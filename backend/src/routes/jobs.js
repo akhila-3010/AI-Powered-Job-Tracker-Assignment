@@ -1,5 +1,5 @@
 import { fetchJobs, getMockJobs, applyFilters } from '../services/jobService.js';
-import { getResume } from '../services/redisService.js';
+import { getResume, clearJobsCache } from '../services/redisService.js';
 import { scoreJobsInBatch } from '../services/aiService.js';
 
 export default async function jobRoutes(fastify) {
@@ -99,7 +99,8 @@ export default async function jobRoutes(fastify) {
                 };
             }
 
-            let jobs = getMockJobs();
+            // Fetch real jobs from Adzuna (not mock data)
+            let jobs = await fetchJobs({});  // Get all jobs from Adzuna
             jobs = await scoreJobsInBatch(resume.text, jobs);
 
             // Get top matches
@@ -114,6 +115,17 @@ export default async function jobRoutes(fastify) {
         } catch (error) {
             fastify.log.error(error);
             reply.status(500).send({ error: 'Failed to get best matches' });
+        }
+    });
+
+    // Clear job cache (useful for development/testing)
+    fastify.post('/clear-cache', async (request, reply) => {
+        try {
+            await clearJobsCache();
+            return { success: true, message: 'Job cache cleared successfully' };
+        } catch (error) {
+            fastify.log.error(error);
+            reply.status(500).send({ error: 'Failed to clear cache' });
         }
     });
 }

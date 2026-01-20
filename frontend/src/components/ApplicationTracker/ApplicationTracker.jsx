@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import './ApplicationTracker.css'
 
 const STATUS_OPTIONS = [
     { value: 'all', label: 'All Applications', icon: '📋' },
@@ -9,11 +8,11 @@ const STATUS_OPTIONS = [
     { value: 'rejected', label: 'Rejected', icon: '❌' }
 ]
 
-const STATUS_COLORS = {
-    applied: 'var(--color-info)',
-    interview: 'var(--color-warning)',
-    offer: 'var(--color-success)',
-    rejected: 'var(--match-low)'
+const STATUS_STYLES = {
+    applied: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+    interview: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+    offer: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+    rejected: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20'
 }
 
 export default function ApplicationTracker({ applications, onStatusChange, onRefresh }) {
@@ -58,11 +57,16 @@ export default function ApplicationTracker({ applications, onStatusChange, onRef
 
     if (applications.length === 0) {
         return (
-            <div className="applications-empty">
-                <div className="empty-illustration">📭</div>
-                <h2>No Applications Yet</h2>
-                <p>Start applying to jobs to track your applications here</p>
-                <button className="btn btn-primary" onClick={() => window.location.reload()}>
+            <div className="flex flex-col items-center justify-center py-24 px-4">
+                <div className="text-6xl mb-6 opacity-50">📭</div>
+                <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-3">No Applications Yet</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 text-center max-w-md leading-relaxed">
+                    Start applying to jobs to track your applications here
+                </p>
+                <button
+                    className="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow"
+                    onClick={() => window.location.reload()}
+                >
                     Browse Jobs
                 </button>
             </div>
@@ -70,12 +74,15 @@ export default function ApplicationTracker({ applications, onStatusChange, onRef
     }
 
     return (
-        <div className="application-tracker">
+        <div className="space-y-6">
             {/* Header with stats */}
-            <div className="tracker-header">
-                <div className="header-title">
-                    <h1>Application Tracker</h1>
-                    <button className="btn btn-ghost btn-sm" onClick={onRefresh}>
+            <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Application Tracker</h1>
+                    <button
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors w-fit"
+                        onClick={onRefresh}
+                    >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
                         </svg>
@@ -83,161 +90,94 @@ export default function ApplicationTracker({ applications, onStatusChange, onRef
                     </button>
                 </div>
 
-                <div className="stats-grid">
+                {/* Stats Grid - Responsive */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                     {STATUS_OPTIONS.map(opt => (
                         <button
                             key={opt.value}
-                            className={`stat-card ${selectedStatus === opt.value ? 'active' : ''}`}
+                            className={`
+                                p-4 rounded-xl border transition-all duration-150 text-left
+                                ${selectedStatus === opt.value
+                                    ? 'bg-indigo-500/10 border-indigo-500/30 shadow-sm'
+                                    : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600'
+                                }
+                            `}
                             onClick={() => setSelectedStatus(opt.value)}
                         >
-                            <span className="stat-icon">{opt.icon}</span>
-                            <div className="stat-info">
-                                <span className="stat-value">
-                                    {opt.value === 'all' ? stats.total : stats[opt.value]}
-                                </span>
-                                <span className="stat-label">{opt.label}</span>
+                            <div className="text-2xl mb-2">{opt.icon}</div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">
+                                {opt.value === 'all' ? stats.total : stats[opt.value]}
+                            </div>
+                            <div className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                {opt.label}
                             </div>
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Applications list */}
-            <div className="applications-content">
-                <div className="applications-list">
-                    {filteredApps.length === 0 ? (
-                        <div className="no-results">
-                            <p>No {selectedStatus} applications</p>
-                        </div>
-                    ) : (
-                        filteredApps.map((app, index) => (
-                            <div
-                                key={app.id}
-                                className={`application-card ${selectedApp?.id === app.id ? 'selected' : ''}`}
-                                style={{ animationDelay: `${index * 50}ms` }}
-                                onClick={() => setSelectedApp(app)}
-                            >
-                                <div className="app-header">
-                                    <div className="app-title-section">
-                                        <h3 className="app-job-title">{app.jobTitle}</h3>
-                                        <span className="app-company">{app.company}</span>
-                                    </div>
-                                    <span
-                                        className="status-badge"
-                                        style={{
-                                            background: `${STATUS_COLORS[app.status]}20`,
-                                            color: STATUS_COLORS[app.status]
-                                        }}
-                                    >
+            {/* Applications Grid - Responsive */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filteredApps.length === 0 ? (
+                    <div className="col-span-full py-16 text-center">
+                        <p className="text-slate-600 dark:text-slate-400">No {selectedStatus} applications</p>
+                    </div>
+                ) : (
+                    filteredApps.map((app, index) => (
+                        <div
+                            key={app.id}
+                            className="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all duration-150 space-y-4"
+                            style={{ animationDelay: `${index * 30}ms` }}
+                        >
+                            {/* Header */}
+                            <div className="space-y-2">
+                                <div className="flex items-start justify-between gap-3">
+                                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-snug flex-1">
+                                        {app.jobTitle}
+                                    </h3>
+                                    <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg border flex-shrink-0 ${STATUS_STYLES[app.status]}`}>
                                         {app.status}
                                     </span>
                                 </div>
-
-                                <div className="app-meta">
-                                    <span className="app-date">
-                                        Applied: {formatDate(app.appliedAt)}
-                                    </span>
-                                    <span className="app-updated">
-                                        Updated: {formatDate(app.updatedAt)}
-                                    </span>
-                                </div>
-
-                                {/* Quick actions */}
-                                <div className="app-actions">
-                                    {getNextStatuses(app.status).map(status => (
-                                        <button
-                                            key={status}
-                                            className="btn btn-sm btn-secondary"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                onStatusChange(app.id, status)
-                                            }}
-                                        >
-                                            Mark as {status}
-                                        </button>
-                                    ))}
-                                    {app.applyUrl && (
-                                        <a
-                                            href={app.applyUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="btn btn-sm btn-ghost"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            View Job
-                                        </a>
-                                    )}
-                                </div>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                    {app.company}
+                                </p>
                             </div>
-                        ))
-                    )}
-                </div>
 
-                {/* Timeline sidebar */}
-                {selectedApp && (
-                    <div className="timeline-sidebar">
-                        <div className="timeline-header">
-                            <h3>Application Timeline</h3>
-                            <button
-                                className="btn btn-ghost btn-icon"
-                                onClick={() => setSelectedApp(null)}
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                    <line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                            </button>
-                        </div>
+                            {/* Meta */}
+                            <div className="flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-500">
+                                <span className="inline-flex items-center gap-1">
+                                    📅 Applied: {formatDate(app.appliedAt)}
+                                </span>
+                                <span className="inline-flex items-center gap-1">
+                                    🔄 Updated: {formatDate(app.updatedAt)}
+                                </span>
+                            </div>
 
-                        <div className="timeline-job-info">
-                            <h4>{selectedApp.jobTitle}</h4>
-                            <p>{selectedApp.company}</p>
-                        </div>
-
-                        <div className="timeline">
-                            {selectedApp.timeline?.map((entry, index) => (
-                                <div key={index} className="timeline-item">
-                                    <div
-                                        className="timeline-dot"
-                                        style={{ background: STATUS_COLORS[entry.status] }}
-                                    />
-                                    <div className="timeline-content">
-                                        <div className="timeline-status" style={{ color: STATUS_COLORS[entry.status] }}>
-                                            {entry.status.toUpperCase()}
-                                        </div>
-                                        <div className="timeline-date">{formatDate(entry.date)}</div>
-                                        {entry.note && <div className="timeline-note">{entry.note}</div>}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Status update section */}
-                        <div className="status-update-section">
-                            <label>Update Status</label>
-                            <div className="status-buttons">
-                                {['applied', 'interview', 'offer', 'rejected'].map(status => (
+                            {/* Actions */}
+                            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/50">
+                                {getNextStatuses(app.status).map(status => (
                                     <button
                                         key={status}
-                                        className={`status-btn ${selectedApp.status === status ? 'current' : ''}`}
-                                        style={{
-                                            borderColor: STATUS_COLORS[status],
-                                            color: selectedApp.status === status ? 'white' : STATUS_COLORS[status],
-                                            background: selectedApp.status === status ? STATUS_COLORS[status] : 'transparent'
-                                        }}
-                                        onClick={() => {
-                                            if (selectedApp.status !== status) {
-                                                onStatusChange(selectedApp.id, status)
-                                            }
-                                        }}
-                                        disabled={selectedApp.status === status}
+                                        className="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                        onClick={() => onStatusChange(app.id, status)}
                                     >
-                                        {status}
+                                        Mark as {status}
                                     </button>
                                 ))}
+                                {app.applyUrl && (
+                                    <a
+                                        href={app.applyUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                                    >
+                                        View Job →
+                                    </a>
+                                )}
                             </div>
                         </div>
-                    </div>
+                    ))
                 )}
             </div>
         </div>

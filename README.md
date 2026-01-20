@@ -28,7 +28,7 @@ An intelligent job tracking system that fetches jobs from external APIs, uses AI
 ### Core Features
 
 ✅ **Job Feed with External API Integration**
-- Fetches jobs from JSearch API (with mock data fallback)
+- Fetches jobs from Adzuna API (real-time data from India)
 - Clean, modern card-based interface
 - Real-time job data with company logos
 
@@ -92,8 +92,8 @@ graph TB
     end
     
     subgraph "External Services"
-        JobAPI[JSearch API<br/>RapidAPI]
-        OpenAI[OpenAI API<br/>Optional]
+        JobAPI[Adzuna API<br/>Job Listings]
+        GeminiAI[Google Gemini<br/>gemini-1.5-flash]
         Redis[(Upstash Redis<br/>or In-Memory)]
     end
     
@@ -124,9 +124,9 @@ graph TB
 
 1. **Job Discovery:**
    - User applies filters → Frontend sends request to `/api/jobs`
-   - Backend fetches from JSearch API (or uses mock data)
+   - Backend fetches from Adzuna API
    - If user has resume, jobs are scored via AI service
-   - Results cached in Redis for 5 minutes
+   - Results cached in Redis for 15 minutes
 
 2. **Resume Processing:**
    - User uploads file → Sent to `/api/resume/upload`
@@ -156,9 +156,9 @@ graph TB
 | **Frontend** | React 18 + Vite | Fast, modern UI framework |
 | **Styling** | CSS Modules + Custom Design System | Premium dark theme, responsive |
 | **Backend** | Node.js + Fastify | High-performance REST API |
-| **AI** | OpenAI GPT-4 (optional) | Job matching & chat (fallback to rules) |
+| **AI** | Google Gemini 1.5 Flash | Job matching & chat (fallback to rules) |
 | **Storage** | Upstash Redis | Serverless data storage (fallback to memory) |
-| **Job API** | JSearch (RapidAPI) | Real job listings (fallback to mock) |
+| **Job API** | Adzuna API | Real job listings from India |
 | **File Upload** | Fastify Multipart | PDF/TXT resume upload |
 | **PDF Parsing** | pdf-parse | Extract text from PDFs |
 
@@ -171,8 +171,8 @@ graph TB
 - Node.js 18+ installed
 - npm or yarn package manager
 - (Optional) API keys for full functionality:
-  - RapidAPI key for JSearch
-  - OpenAI API key
+  - Adzuna API credentials (App ID + App Key)
+  - Google Gemini API key
   - Upstash Redis credentials
 
 ### Local Development
@@ -222,8 +222,9 @@ PORT=3001
 FRONTEND_URL=http://localhost:5173
 
 # Optional - App works without these
-RAPIDAPI_KEY=your_rapidapi_key_here
-OPENAI_API_KEY=your_openai_key_here
+ADZUNA_APP_ID=your_adzuna_app_id_here
+ADZUNA_APP_KEY=your_adzuna_app_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 UPSTASH_REDIS_REST_URL=your_redis_url_here
 UPSTASH_REDIS_REST_TOKEN=your_redis_token_here
 \`\`\`
@@ -520,8 +521,8 @@ MIT License - Feel free to use for your projects!
 
 - **Fonts:** Inter from Google Fonts
 - **Icons:** Hand-crafted SVGs
-- **Job Data:** JSearch API (RapidAPI)
-- **AI:** OpenAI GPT-4
+- **Job Data:** Adzuna API
+- **AI:** Google Gemini 1.5 Flash
 
 ---
 

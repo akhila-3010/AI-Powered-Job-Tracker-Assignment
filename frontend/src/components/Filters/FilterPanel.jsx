@@ -1,5 +1,3 @@
-import './FilterPanel.css'
-
 const SKILLS = [
     'React', 'Vue.js', 'Angular', 'JavaScript', 'TypeScript',
     'Node.js', 'Python', 'Java', 'Go', 'Ruby',
@@ -54,36 +52,36 @@ export default function FilterPanel({ filters, onFilterChange, hasResume }) {
         filters.workMode !== 'all' || filters.location || filters.minScore > 0
 
     return (
-        <aside className="filter-panel">
-            <div className="filter-header">
-                <h2>Filters</h2>
+        <aside className="h-fit sticky top-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-6 max-h-[calc(100vh-7rem)] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Filters</h2>
                 {hasActiveFilters && (
-                    <button className="btn btn-ghost btn-sm" onClick={clearFilters}>
+                    <button
+                        className="text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        onClick={clearFilters}
+                    >
                         Clear all
                     </button>
                 )}
             </div>
 
-            {/* Search */}
-            <div className="filter-section">
-                <label className="filter-label">Role / Title</label>
-                <input
-                    type="text"
-                    className="input"
-                    placeholder="Search jobs..."
-                    value={filters.query}
-                    onChange={(e) => onFilterChange({ ...filters, query: e.target.value })}
-                />
-            </div>
-
             {/* Skills */}
-            <div className="filter-section">
-                <label className="filter-label">Skills</label>
-                <div className="skills-grid">
+            <div className="space-y-3">
+                <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                    Skills
+                </label>
+                <div className="flex flex-wrap gap-2">
                     {SKILLS.map(skill => (
                         <button
                             key={skill}
-                            className={`skill-chip ${filters.skills.includes(skill) ? 'active' : ''}`}
+                            className={`
+                                px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150
+                                ${filters.skills.includes(skill)
+                                    ? 'bg-indigo-500 text-white border border-indigo-500'
+                                    : 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
+                                }
+                            `}
                             onClick={() => handleSkillToggle(skill)}
                         >
                             {skill}
@@ -93,10 +91,12 @@ export default function FilterPanel({ filters, onFilterChange, hasResume }) {
             </div>
 
             {/* Date Posted */}
-            <div className="filter-section">
-                <label className="filter-label">Date Posted</label>
+            <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                    Date Posted
+                </label>
                 <select
-                    className="input"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
                     value={filters.datePosted}
                     onChange={(e) => onFilterChange({ ...filters, datePosted: e.target.value })}
                 >
@@ -107,49 +107,61 @@ export default function FilterPanel({ filters, onFilterChange, hasResume }) {
             </div>
 
             {/* Job Type */}
-            <div className="filter-section">
-                <label className="filter-label">Job Type</label>
-                <div className="radio-group">
+            <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                    Job Type
+                </label>
+                <div className="space-y-2">
                     {JOB_TYPES.map(opt => (
-                        <label key={opt.value} className="radio-item">
+                        <label key={opt.value} className="flex items-center gap-2 cursor-pointer group">
                             <input
                                 type="radio"
                                 name="jobType"
                                 value={opt.value}
                                 checked={filters.jobType === opt.value}
                                 onChange={(e) => onFilterChange({ ...filters, jobType: e.target.value })}
+                                className="w-4 h-4 text-indigo-500 border-slate-300 dark:border-slate-500 focus:ring-indigo-500/50"
                             />
-                            <span>{opt.label}</span>
+                            <span className="text-sm text-slate-800 dark:text-slate-200 font-medium group-hover:text-slate-900 dark:group-hover:text-white">
+                                {opt.label}
+                            </span>
                         </label>
                     ))}
                 </div>
             </div>
 
             {/* Work Mode */}
-            <div className="filter-section">
-                <label className="filter-label">Work Mode</label>
-                <div className="radio-group">
+            <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                    Work Mode
+                </label>
+                <div className="space-y-2">
                     {WORK_MODES.map(opt => (
-                        <label key={opt.value} className="radio-item">
+                        <label key={opt.value} className="flex items-center gap-2 cursor-pointer group">
                             <input
                                 type="radio"
                                 name="workMode"
                                 value={opt.value}
                                 checked={filters.workMode === opt.value}
                                 onChange={(e) => onFilterChange({ ...filters, workMode: e.target.value })}
+                                className="w-4 h-4 text-indigo-500 border-slate-300 dark:border-slate-500 focus:ring-indigo-500/50"
                             />
-                            <span>{opt.label}</span>
+                            <span className="text-sm text-slate-800 dark:text-slate-200 font-medium group-hover:text-slate-900 dark:group-hover:text-white">
+                                {opt.label}
+                            </span>
                         </label>
                     ))}
                 </div>
             </div>
 
             {/* Location */}
-            <div className="filter-section">
-                <label className="filter-label">Location</label>
+            <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                    Location
+                </label>
                 <input
                     type="text"
-                    className="input"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
                     placeholder="City or region..."
                     value={filters.location}
                     onChange={(e) => onFilterChange({ ...filters, location: e.target.value })}
@@ -158,25 +170,29 @@ export default function FilterPanel({ filters, onFilterChange, hasResume }) {
 
             {/* Match Score */}
             {hasResume && (
-                <div className="filter-section">
-                    <label className="filter-label">
-                        Match Score
-                        <span className="filter-value">{filters.minScore > 0 ? `>${filters.minScore}%` : 'All'}</span>
-                    </label>
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                            Match Score
+                        </label>
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            {filters.minScore > 0 ? `>${filters.minScore}%` : 'All'}
+                        </span>
+                    </div>
                     <input
                         type="range"
-                        className="range-input"
+                        className="w-full h-2 bg-slate-300 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer accent-indigo-500"
                         min="0"
                         max="100"
                         step="10"
                         value={filters.minScore}
                         onChange={(e) => onFilterChange({ ...filters, minScore: parseInt(e.target.value) })}
                     />
-                    <div className="range-labels">
-                        <span>All</span>
-                        <span className="match-indicator low">Low</span>
-                        <span className="match-indicator medium">Medium</span>
-                        <span className="match-indicator high">High</span>
+                    <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-700 dark:text-slate-300">All</span>
+                        <span className="text-slate-700 dark:text-slate-300">Low</span>
+                        <span className="text-amber-600 dark:text-amber-400">Med</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">High</span>
                     </div>
                 </div>
             )}

@@ -1,5 +1,5 @@
 import { processChat } from '../services/aiService.js';
-import { getMockJobs } from '../services/jobService.js';
+import { fetchJobs } from '../services/jobService.js';
 import { getResume } from '../services/redisService.js';
 
 export default async function chatRoutes(fastify) {
@@ -14,7 +14,7 @@ export default async function chatRoutes(fastify) {
             }
 
             // Get current jobs and resume for context
-            const jobs = getMockJobs();
+            const jobs = await fetchJobs({});
             const resume = await getResume(userId);
             const resumeText = resume?.text || '';
 

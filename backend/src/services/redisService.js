@@ -156,3 +156,18 @@ export async function clearMatchScores(userId) {
     const r = getRedis();
     await r.del(`matchscores:${userId}`);
 }
+
+// Clear job cache
+export async function clearJobsCache(cacheKey = '*') {
+    const r = getRedis();
+    if (cacheKey === '*') {
+        // Clear all job caches
+        const keys = await r.keys('jobs:*');
+        if (keys && keys.length > 0) {
+            await Promise.all(keys.map(key => r.del(key)));
+        }
+    } else {
+        await r.del(`jobs:${cacheKey}`);
+    }
+}
+

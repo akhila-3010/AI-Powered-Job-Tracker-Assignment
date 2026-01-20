@@ -6,7 +6,6 @@ import ApplicationTracker from './components/ApplicationTracker/ApplicationTrack
 import AISidebar from './components/AISidebar/AISidebar'
 import ResumeModal from './components/ResumeUpload/ResumeModal'
 import ApplicationPopup from './components/SmartPopup/ApplicationPopup'
-import './App.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
@@ -25,32 +24,52 @@ function App() {
     location: '',
     minScore: 0
   })
+
+  // Debounced query state for performance optimization
+  const [debouncedQuery, setDebouncedQuery] = useState(filters.query)
+
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [applications, setApplications] = useState([])
 
-  // Check for resume on mount
   useEffect(() => {
     checkResume()
   }, [])
 
-  // Fetch jobs when filters change
   useEffect(() => {
-    fetchJobs()
-  }, [filters, hasResume])
+    const timer = setTimeout(() => {
+      setDebouncedQuery(filters.query)
+    }, 400)
 
-  // Fetch applications
+    return () => clearTimeout(timer)
+  }, [filters.query])
+
+  useEffect(() => {
+    if (activeTab === 'jobs') {
+      fetchJobs()
+    }
+  }, [
+    activeTab,
+    debouncedQuery,
+    filters.skills,
+    filters.datePosted,
+    filters.jobType,
+    filters.workMode,
+    filters.location,
+    filters.minScore,
+    hasResume
+  ])
+
   useEffect(() => {
     if (activeTab === 'applications') {
       fetchApplications()
     }
   }, [activeTab])
 
-  // Handle tab visibility for smart popup
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && pendingApplication) {
-        // User returned to the tab
+        // Trigger popup when user returns after clicking Apply
       }
     }
 
@@ -64,7 +83,7 @@ function App() {
       const data = await res.json()
       setHasResume(data.hasResume)
 
-      // Show resume modal if no resume
+
       if (!data.hasResume) {
         setTimeout(() => setShowResumeModal(true), 1000)
       }
@@ -77,7 +96,7 @@ function App() {
     setLoading(true)
     try {
       const params = new URLSearchParams()
-      if (filters.query) params.append('query', filters.query)
+      if (debouncedQuery) params.append('query', debouncedQuery)
       if (filters.skills.length) params.append('skills', filters.skills.join(','))
       if (filters.datePosted !== 'all') params.append('datePosted', filters.datePosted)
       if (filters.jobType !== 'all') params.append('jobType', filters.jobType)
@@ -106,7 +125,6 @@ function App() {
   }
 
   const handleApply = (job) => {
-    // Store pending application
     setPendingApplication({
       ...job,
       clickedAt: new Date().toISOString()
@@ -141,7 +159,7 @@ function App() {
   const handleResumeUpload = () => {
     setHasResume(true)
     setShowResumeModal(false)
-    fetchJobs() // Refresh to get match scores
+    fetchJobs()
   }
 
   const updateApplicationStatus = async (appId, status) => {
@@ -158,31 +176,47 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onResumeClick={() => setShowResumeModal(true)}
         onAIClick={() => setShowAISidebar(!showAISidebar)}
         hasResume={hasResume}
+        filters={filters}
+        onFilterChange={setFilters}
       />
 
-      <main className="main-content">
+      <main className="flex-1 p-4 md:p-6 pt-20 md:pt-6 max-w-[1600px] mx-auto w-full">
         {activeTab === 'jobs' && (
-          <div className="jobs-layout">
-            <FilterPanel
-              filters={filters}
-              onFilterChange={setFilters}
-              hasResume={hasResume}
-            />
-            <JobFeed
-              jobs={jobs}
-              loading={loading}
-              hasResume={hasResume}
-              onApply={handleApply}
-              applications={applications}
-            />
-          </div>
+          <>
+            {/* Filter Panel - Desktop Only */}
+            <div className="hidden lg:grid lg:grid-cols-[280px_1fr] gap-6">
+              <FilterPanel
+                filters={filters}
+                onFilterChange={setFilters}
+                hasResume={hasResume}
+              />
+              <JobFeed
+                jobs={jobs}
+                loading={loading}
+                hasResume={hasResume}
+                onApply={handleApply}
+                applications={applications}
+              />
+            </div>
+
+            {/* Job Feed - Mobile Only (No Filter Panel) */}
+            <div className="lg:hidden">
+              <JobFeed
+                jobs={jobs}
+                loading={loading}
+                hasResume={hasResume}
+                onApply={handleApply}
+                applications={applications}
+              />
+            </div>
+          </>
         )}
 
         {activeTab === 'applications' && (
@@ -204,13 +238,7 @@ function App() {
       )}
 
       {showAISidebar && (
-        <AISidebar
-          onClose={() => setShowAISidebar(false)}
-          onJobSelect={(job) => {
-            setActiveTab('jobs')
-            // Could highlight the job in the feed
-          }}
-        />
+        <AISidebar onClose={() => setShowAISidebar(false)} />
       )}
 
       {pendingApplication && (

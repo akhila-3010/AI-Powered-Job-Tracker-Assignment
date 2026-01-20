@@ -1,21 +1,26 @@
 import { getCachedJobs, cacheJobs } from './redisService.js';
 
-// JSearch API configuration
+// Adzuna API configuration (Primary for India jobs)
+const ADZUNA_API_BASE = 'https://api.adzuna.com/v1/api/jobs/in/search';
+const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
+const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
+
+// JSearch API configuration (Secondary fallback)
 const JSEARCH_API_HOST = 'jsearch.p.rapidapi.com';
 const JSEARCH_API_KEY = process.env.RAPIDAPI_KEY;
 
-// Mock jobs data for development/demo
+// Mock jobs data for development/demo - India locations
 const MOCK_JOBS = [
     {
         id: 'job-1',
         title: 'Senior React Developer',
-        company: 'TechCorp Inc.',
-        location: 'San Francisco, CA',
+        company: 'TechCorp India',
+        location: 'Bangalore, Karnataka',
         workMode: 'Remote',
         jobType: 'Full-time',
         description: 'We are looking for a Senior React Developer with 5+ years of experience. You will be working on our flagship product using React, TypeScript, Redux, and Node.js. Experience with AWS and CI/CD pipelines is a plus.',
         skills: ['React', 'TypeScript', 'Redux', 'Node.js', 'AWS'],
-        salary: '$150,000 - $180,000',
+        salary: '₹25,00,000 - ₹35,00,000',
         postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20React%20Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=TC&background=6366f1&color=fff'
@@ -23,200 +28,340 @@ const MOCK_JOBS = [
     {
         id: 'job-2',
         title: 'Full Stack Engineer',
-        company: 'StartupXYZ',
-        location: 'New York, NY',
+        company: 'StartupHub',
+        location: 'Hyderabad, Telangana',
         workMode: 'Hybrid',
         jobType: 'Full-time',
         description: 'Join our fast-growing startup as a Full Stack Engineer. We use Python, Django, React, and PostgreSQL. You\'ll work on building new features and scaling our platform. Experience with Docker and Kubernetes preferred.',
         skills: ['Python', 'Django', 'React', 'PostgreSQL', 'Docker'],
-        salary: '$120,000 - $150,000',
+        salary: '₹18,00,000 - ₹28,00,000',
         postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.indeed.com/jobs?q=Full+Stack+Engineer',
-        companyLogo: 'https://ui-avatars.com/api/?name=SX&background=10b981&color=fff'
+        applyUrl: 'https://www.naukri.com/jobs?q=Full+Stack+Engineer',
+        companyLogo: 'https://ui-avatars.com/api/?name=SH&background=10b981&color=fff'
     },
     {
         id: 'job-3',
         title: 'Frontend Developer',
-        company: 'DesignStudio',
-        location: 'Austin, TX',
+        company: 'DesignStudio India',
+        location: 'Mumbai, Maharashtra',
         workMode: 'On-site',
         jobType: 'Full-time',
         description: 'Creative agency seeking a Frontend Developer with strong CSS skills. Must have experience with Vue.js or React, animations, and responsive design. Figma experience required.',
         skills: ['React', 'Vue.js', 'CSS', 'Figma', 'JavaScript'],
-        salary: '$90,000 - $120,000',
+        salary: '₹12,00,000 - ₹18,00,000',
         postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Frontend+Developer',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Frontend+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=DS&background=f59e0b&color=fff'
     },
     {
         id: 'job-4',
         title: 'Backend Developer - Node.js',
-        company: 'CloudServices Co',
-        location: 'Seattle, WA',
+        company: 'CloudServices India',
+        location: 'Pune, Maharashtra',
         workMode: 'Remote',
         jobType: 'Full-time',
         description: 'Looking for a Backend Developer proficient in Node.js and microservices architecture. Experience with MongoDB, Redis, and message queues (RabbitMQ/Kafka) required. AWS experience is a must.',
         skills: ['Node.js', 'MongoDB', 'Redis', 'AWS', 'Microservices'],
-        salary: '$130,000 - $160,000',
+        salary: '₹20,00,000 - ₹30,00,000',
         postedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Backend%20Developer%20Node.js',
+        applyUrl: 'https://www.naukri.com/jobs?q=Backend+Developer+Node.js',
         companyLogo: 'https://ui-avatars.com/api/?name=CS&background=8b5cf6&color=fff'
     },
     {
         id: 'job-5',
         title: 'Junior Python Developer',
-        company: 'DataTech Analytics',
-        location: 'Chicago, IL',
+        company: 'DataTech Solutions',
+        location: 'Chennai, Tamil Nadu',
         workMode: 'Hybrid',
         jobType: 'Full-time',
         description: 'Entry-level position for Python developers. Will work on data pipelines and automation scripts. Knowledge of pandas, numpy, and SQL is beneficial. Great opportunity to learn machine learning.',
         skills: ['Python', 'SQL', 'Pandas', 'NumPy', 'Git'],
-        salary: '$70,000 - $90,000',
+        salary: '₹6,00,000 - ₹10,00,000',
         postedDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.indeed.com/jobs?q=Junior+Python+Developer',
+        applyUrl: 'https://www.naukri.com/jobs?q=Junior+Python+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=DT&background=ec4899&color=fff'
     },
     {
         id: 'job-6',
         title: 'DevOps Engineer',
-        company: 'InfraCloud',
-        location: 'Denver, CO',
+        company: 'InfraCloud Systems',
+        location: 'Bangalore, Karnataka',
         workMode: 'Remote',
         jobType: 'Contract',
         description: 'DevOps Engineer needed for cloud infrastructure management. Must have strong experience with Terraform, Kubernetes, and CI/CD pipelines. AWS or GCP certification preferred.',
         skills: ['Kubernetes', 'Terraform', 'AWS', 'Docker', 'Jenkins'],
-        salary: '$140,000 - $170,000',
+        salary: '₹22,00,000 - ₹32,00,000',
         postedDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.dice.com/jobs?q=DevOps+Engineer',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=DevOps+Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=IC&background=14b8a6&color=fff'
     },
     {
         id: 'job-7',
         title: 'UX Designer',
-        company: 'ProductFirst',
-        location: 'Los Angeles, CA',
+        company: 'ProductFirst Design',
+        location: 'Gurgaon, Haryana',
         workMode: 'Hybrid',
         jobType: 'Full-time',
         description: 'UX Designer with strong Figma skills needed. Create user flows, wireframes, and prototypes. Experience with design systems and user research required. Work closely with developers.',
         skills: ['Figma', 'UI/UX', 'Prototyping', 'User Research', 'Design Systems'],
-        salary: '$100,000 - $130,000',
+        salary: '₹15,00,000 - ₹22,00,000',
         postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=UX%20Designer',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=UX+Designer',
         companyLogo: 'https://ui-avatars.com/api/?name=PF&background=f43f5e&color=fff'
     },
     {
         id: 'job-8',
         title: 'Machine Learning Engineer',
-        company: 'AI Innovations',
-        location: 'Boston, MA',
+        company: 'AI Innovations India',
+        location: 'Hyderabad, Telangana',
         workMode: 'Remote',
         jobType: 'Full-time',
         description: 'ML Engineer to develop and deploy machine learning models. Strong Python, TensorFlow/PyTorch experience required. Experience with NLP and computer vision is a plus.',
         skills: ['Python', 'TensorFlow', 'PyTorch', 'Machine Learning', 'NLP'],
-        salary: '$160,000 - $200,000',
+        salary: '₹28,00,000 - ₹40,00,000',
         postedDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Machine+Learning+Engineer',
+        applyUrl: 'https://www.naukri.com/jobs?q=Machine+Learning+Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=AI&background=3b82f6&color=fff'
     },
     {
         id: 'job-9',
         title: 'React Native Developer',
         company: 'MobileFirst Apps',
-        location: 'Miami, FL',
+        location: 'Noida, Uttar Pradesh',
         workMode: 'Remote',
         jobType: 'Full-time',
         description: 'Build cross-platform mobile apps using React Native. Experience with Redux, TypeScript, and native module development. iOS and Android publishing experience required.',
         skills: ['React Native', 'TypeScript', 'Redux', 'iOS', 'Android'],
-        salary: '$110,000 - $140,000',
+        salary: '₹16,00,000 - ₹24,00,000',
         postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.indeed.com/jobs?q=React+Native+Developer',
+        applyUrl: 'https://www.naukri.com/jobs?q=React+Native+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=MF&background=84cc16&color=fff'
     },
     {
         id: 'job-10',
         title: 'Data Engineer',
         company: 'BigData Corp',
-        location: 'Atlanta, GA',
+        location: 'Kolkata, West Bengal',
         workMode: 'On-site',
         jobType: 'Full-time',
         description: 'Data Engineer to build and maintain data pipelines. Experience with Spark, Airflow, and cloud data warehouses (Snowflake/BigQuery) required. SQL expertise is a must.',
         skills: ['Python', 'Spark', 'Airflow', 'SQL', 'Snowflake'],
-        salary: '$125,000 - $155,000',
+        salary: '₹18,00,000 - ₹26,00,000',
         postedDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Data%20Engineer',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Data+Engineer',
         companyLogo: 'https://ui-avatars.com/api/?name=BD&background=0891b2&color=fff'
     },
     {
         id: 'job-11',
         title: 'Software Engineering Intern',
         company: 'TechStart',
-        location: 'San Jose, CA',
+        location: 'Pune, Maharashtra',
         workMode: 'Hybrid',
         jobType: 'Internship',
         description: 'Summer internship for CS students. Work on real projects with React and Node.js. Mentorship provided. Great learning opportunity for aspiring developers.',
         skills: ['JavaScript', 'React', 'Node.js', 'Git', 'Problem Solving'],
-        salary: '$30/hour',
+        salary: '₹25,000/month',
         postedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.indeed.com/jobs?q=Software+Engineering+Intern',
+        applyUrl: 'https://www.internshala.com/jobs?q=Software+Engineering+Intern',
         companyLogo: 'https://ui-avatars.com/api/?name=TS&background=7c3aed&color=fff'
     },
     {
         id: 'job-12',
         title: 'Senior Backend Developer - Java',
         company: 'Enterprise Solutions',
-        location: 'Dallas, TX',
+        location: 'Ahmedabad, Gujarat',
         workMode: 'On-site',
         jobType: 'Full-time',
         description: 'Senior Java developer for enterprise applications. Experience with Spring Boot, microservices, and Oracle/PostgreSQL databases required. Leadership experience preferred.',
         skills: ['Java', 'Spring Boot', 'Microservices', 'PostgreSQL', 'Oracle'],
-        salary: '$140,000 - $175,000',
+        salary: '₹22,00,000 - ₹32,00,000',
         postedDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.dice.com/jobs?q=Senior+Backend+Developer+Java',
+        applyUrl: 'https://www.naukri.com/jobs?q=Senior+Backend+Developer+Java',
         companyLogo: 'https://ui-avatars.com/api/?name=ES&background=059669&color=fff'
     },
     {
         id: 'job-13',
         title: 'Part-time Web Developer',
-        company: 'LocalBusiness Co',
-        location: 'Phoenix, AZ',
+        company: 'LocalBusiness India',
+        location: 'Jaipur, Rajasthan',
         workMode: 'Remote',
         jobType: 'Part-time',
         description: 'Part-time web developer to maintain and update company websites. WordPress and basic HTML/CSS/JS skills needed. Flexible hours, 20 hours per week.',
         skills: ['WordPress', 'HTML', 'CSS', 'JavaScript', 'PHP'],
-        salary: '$35/hour',
+        salary: '₹500/hour',
         postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.indeed.com/jobs?q=Part+Time+Web+Developer',
+        applyUrl: 'https://www.naukri.com/jobs?q=Part+Time+Web+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=LB&background=d946ef&color=fff'
     },
     {
         id: 'job-14',
         title: 'Golang Developer',
         company: 'HighPerformance Tech',
-        location: 'Portland, OR',
+        location: 'Bangalore, Karnataka',
         workMode: 'Remote',
         jobType: 'Full-time',
         description: 'Backend developer specializing in Go. Build high-performance APIs and microservices. Experience with gRPC, Kubernetes, and distributed systems required.',
         skills: ['Go', 'gRPC', 'Kubernetes', 'Docker', 'PostgreSQL'],
-        salary: '$135,000 - $165,000',
+        salary: '₹20,00,000 - ₹28,00,000',
         postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Golang%20Developer',
+        applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Golang+Developer',
         companyLogo: 'https://ui-avatars.com/api/?name=HP&background=06b6d4&color=fff'
     },
     {
         id: 'job-15',
         title: 'Technical Lead - Frontend',
-        company: 'ScaleUp Inc',
-        location: 'Washington, DC',
+        company: 'ScaleUp Technologies',
+        location: 'Delhi NCR, Delhi',
         workMode: 'Hybrid',
         jobType: 'Full-time',
         description: 'Technical Lead for frontend team. Lead a team of 5 developers building React applications. Architecture decisions, code reviews, and mentoring. 8+ years experience required.',
         skills: ['React', 'TypeScript', 'Leadership', 'Architecture', 'Mentoring'],
-        salary: '$170,000 - $200,000',
+        salary: '₹30,00,000 - ₹45,00,000',
         postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        applyUrl: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Technical+Lead+Frontend',
+        applyUrl: 'https://www.naukri.com/jobs?q=Technical+Lead+Frontend',
         companyLogo: 'https://ui-avatars.com/api/?name=SU&background=ea580c&color=fff'
     }
 ];
+
+// Fetch jobs from Adzuna API
+async function fetchFromAdzuna(filters) {
+    if (!ADZUNA_APP_ID || !ADZUNA_APP_KEY) {
+        console.log('No Adzuna credentials, trying alternative sources');
+        return null;
+    }
+
+    try {
+        const page = 1;
+        const params = new URLSearchParams({
+            app_id: ADZUNA_APP_ID,
+            app_key: ADZUNA_APP_KEY,
+            results_per_page: '50',
+            sort_by: 'date'
+        });
+
+        if (filters.query) {
+            params.append('what', filters.query);
+        }
+
+        if (filters.skills && filters.skills.length > 0) {
+            const skillsQuery = filters.skills.join(' ');
+            const currentWhat = params.get('what') || '';
+            params.set('what', currentWhat ? `${currentWhat} ${skillsQuery}` : skillsQuery);
+        }
+
+        if (filters.location) {
+            params.append('where', filters.location);
+        }
+
+        if (filters.datePosted && filters.datePosted !== 'all') {
+            const daysMap = { 'day': '1', 'week': '7', 'month': '30' };
+            if (daysMap[filters.datePosted]) {
+                params.append('max_days_old', daysMap[filters.datePosted]);
+            }
+        }
+
+        if (filters.jobType && filters.jobType !== 'all') {
+            const jobTypeMap = {
+                'full-time': 'full_time',
+                'part-time': 'part_time',
+                'contract': 'contract',
+                'internship': 'contract'
+            };
+            const paramName = jobTypeMap[filters.jobType.toLowerCase()];
+            if (paramName) {
+                params.append(paramName, '1');
+            }
+        }
+
+        if (filters.workMode === 'Remote') {
+            const currentWhat = params.get('what') || '';
+            params.set('what', currentWhat ? `${currentWhat} remote` : 'remote');
+        }
+
+        const url = `${ADZUNA_API_BASE}/${page}?${params}`;
+
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Adzuna API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+
+        return data.results?.map(transformAdzunaJob) || [];
+    } catch (error) {
+        console.error('Adzuna API error:', error);
+        return null;
+    }
+}
+
+function transformAdzunaJob(job) {
+    const description = job.description || '';
+    const lowerDesc = description.toLowerCase();
+    let workMode = 'On-site';
+
+    if (lowerDesc.includes('remote') || lowerDesc.includes('work from home') ||
+        lowerDesc.includes('wfh') || lowerDesc.includes('work anywhere')) {
+        workMode = 'Remote';
+    } else if (lowerDesc.includes('hybrid')) {
+        workMode = 'Hybrid';
+    }
+
+    const contractTimeMap = {
+        'full_time': 'Full-time',
+        'part_time': 'Part-time',
+        'contract': 'Contract',
+        'permanent': 'Full-time'
+    };
+    const jobType = contractTimeMap[job.contract_time] || 'Full-time';
+
+    // Format salary
+    let salary = 'Competitive salary';
+    if (job.salary_min && job.salary_max) {
+        const formatINR = (amount) => {
+            const lakhs = amount / 100000;
+            return lakhs >= 1 ? `₹${lakhs.toFixed(2)}L` : `₹${(amount / 1000).toFixed(0)}K`;
+        };
+        salary = `${formatINR(job.salary_min)} - ${formatINR(job.salary_max)}`;
+    } else if (job.salary_min) {
+        const lakhs = job.salary_min / 100000;
+        salary = lakhs >= 1 ? `₹${lakhs.toFixed(2)}L+` : `₹${(job.salary_min / 1000).toFixed(0)}K+`;
+    }
+
+    const location = job.location?.display_name ||
+        (job.location?.area ? job.location.area.join(', ') : 'India');
+    const company = job.company?.display_name || 'Company';
+
+    // Fix date formatting - calculate proper posted date
+    let postedDate = new Date().toISOString();
+    if (job.created) {
+        try {
+            const createdDate = new Date(job.created);
+            // If date is in the future or invalid, use current date
+            if (createdDate <= new Date()) {
+                postedDate = createdDate.toISOString();
+            }
+        } catch (e) {
+            console.warn('Invalid date format:', job.created);
+        }
+    }
+
+    return {
+        id: job.id || `adzuna-${Date.now()}-${Math.random()}`,
+        title: job.title,
+        company: company,
+        location: location,
+        workMode: workMode,
+        jobType: jobType,
+        description: job.description || 'No description available',
+        skills: extractSkillsFromDescription(job.description || ''),
+        salary: salary,
+        postedDate: postedDate,
+        applyUrl: job.redirect_url || '#',
+        companyLogo: `https://ui-avatars.com/api/?name=${encodeURIComponent(company)}&background=random`
+    };
+}
 
 // Fetch jobs from JSearch API
 async function fetchFromJSearch(filters) {
@@ -233,9 +378,9 @@ async function fetchFromJSearch(filters) {
             date_posted: filters.datePosted || 'all'
         });
 
-        if (filters.location) {
-            params.append('location', filters.location);
-        }
+        // Default to India, but allow override with specific location filter
+        const locationQuery = filters.location || 'India';
+        params.append('location', locationQuery);
 
         if (filters.workMode === 'Remote') {
             params.append('remote_jobs_only', 'true');
@@ -364,24 +509,32 @@ function applyFilters(jobs, filters) {
 }
 
 export async function fetchJobs(filters = {}) {
-    // Check cache first
+    // Check cache first (15 minutes for Adzuna to save API calls)
     const cacheKey = JSON.stringify(filters);
     const cached = await getCachedJobs(cacheKey);
     if (cached) {
-        console.log('Returning cached jobs');
+
         return cached;
     }
 
-    // Try to fetch from API
-    let jobs = await fetchFromJSearch(filters);
+    let jobs = null;
 
-    // Fallback to mock data
+    // Priority 1: Try Adzuna API (Primary for India jobs)
+    jobs = await fetchFromAdzuna(filters);
+
+    // Priority 2: Try JSearch API (Secondary fallback)
     if (!jobs || jobs.length === 0) {
+        jobs = await fetchFromJSearch(filters);
+    }
+
+    // Priority 3: Fallback to mock data
+    if (!jobs || jobs.length === 0) {
+
         jobs = applyFilters(MOCK_JOBS, filters);
     }
 
-    // Cache results
-    await cacheJobs(cacheKey, jobs, 300); // 5 minute cache
+    // Cache results (15 min cache for Adzuna to respect rate limits)
+    await cacheJobs(cacheKey, jobs, 900);
 
     return jobs;
 }

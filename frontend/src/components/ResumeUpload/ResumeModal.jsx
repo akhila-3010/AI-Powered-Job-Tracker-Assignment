@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import './ResumeModal.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
@@ -95,39 +94,64 @@ export default function ResumeModal({ onClose, onUpload, hasExisting }) {
     const isValid = (mode === 'upload' && file) || (mode === 'paste' && text.trim().length >= 50)
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal resume-modal" onClick={e => e.stopPropagation()}>
-                <button className="modal-close" onClick={onClose}>
+        <div className="fixed inset-0 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+            <div className="bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700/50 rounded-3xl p-6 md:p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                {/* Close button */}
+                <button
+                    className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                    onClick={onClose}
+                >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <line x1="18" y1="6" x2="6" y2="18" />
                         <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                 </button>
 
-                <div className="modal-header">
-                    <div className="modal-icon">📄</div>
-                    <h2>{hasExisting ? 'Update Your Resume' : 'Upload Your Resume'}</h2>
-                    <p>Help us find the best job matches for you</p>
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <div className="text-5xl mb-4">📄</div>
+                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                        {hasExisting ? 'Update Your Resume' : 'Upload Your Resume'}
+                    </h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Help us find the best job matches for you
+                    </p>
                 </div>
 
-                <div className="mode-tabs">
+                {/* Mode Tabs */}
+                <div className="flex gap-2 mb-6 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl">
                     <button
-                        className={`mode-tab ${mode === 'upload' ? 'active' : ''}`}
+                        className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-150
+                            ${mode === 'upload'
+                                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                            }`}
                         onClick={() => setMode('upload')}
                     >
                         Upload File
                     </button>
                     <button
-                        className={`mode-tab ${mode === 'paste' ? 'active' : ''}`}
+                        className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-150
+                            ${mode === 'paste'
+                                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                            }`}
                         onClick={() => setMode('paste')}
                     >
                         Paste Text
                     </button>
                 </div>
 
+                {/* Upload/Paste Area */}
                 {mode === 'upload' ? (
                     <div
-                        className={`upload-zone ${dragActive ? 'drag-active' : ''} ${file ? 'has-file' : ''}`}
+                        className={`border-2 border-dashed rounded-2xl p-8 md:p-12 text-center cursor-pointer transition-all duration-150
+                            ${dragActive
+                                ? 'border-indigo-500 bg-indigo-500/5'
+                                : file
+                                    ? 'border-emerald-500 bg-emerald-500/5'
+                                    : 'border-slate-300 dark:border-slate-700 hover:border-indigo-500 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                            }`}
                         onDragEnter={handleDrag}
                         onDragLeave={handleDrag}
                         onDragOver={handleDrag}
@@ -143,53 +167,57 @@ export default function ResumeModal({ onClose, onUpload, hasExisting }) {
                         />
 
                         {file ? (
-                            <div className="file-preview">
-                                <div className="file-icon">
+                            <div className="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                                <div className="text-4xl flex-shrink-0">
                                     {file.type === 'application/pdf' ? '📕' : '📝'}
                                 </div>
-                                <div className="file-info">
-                                    <span className="file-name">{file.name}</span>
-                                    <span className="file-size">{(file.size / 1024).toFixed(1)} KB</span>
+                                <div className="flex-1 text-left">
+                                    <div className="font-medium text-slate-900 dark:text-slate-100 text-sm">{file.name}</div>
+                                    <div className="text-xs text-slate-500 dark:text-slate-500">{(file.size / 1024).toFixed(1)} KB</div>
                                 </div>
                                 <button
-                                    className="remove-file"
+                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
                                     onClick={(e) => { e.stopPropagation(); setFile(null); }}
                                 >
-                                    ×
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
                                 </button>
                             </div>
                         ) : (
                             <>
-                                <div className="upload-icon">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="17,8 12,3 7,8" />
-                                        <line x1="12" y1="3" x2="12" y2="15" />
-                                    </svg>
-                                </div>
-                                <p className="upload-text">
-                                    <strong>Click to upload</strong> or drag and drop
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-4 text-slate-400">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17,8 12,3 7,8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                                <p className="text-slate-700 dark:text-slate-300 mb-1">
+                                    <strong className="font-semibold">Click to upload</strong> or drag and drop
                                 </p>
-                                <p className="upload-hint">PDF or TXT (max 10MB)</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-500">PDF or TXT (max 10MB)</p>
                             </>
                         )}
                     </div>
                 ) : (
-                    <div className="paste-zone">
+                    <div className="space-y-2">
                         <textarea
-                            className="paste-textarea"
-                            placeholder="Paste your resume text here...&#10;&#10;Include your skills, experience, education, and any other relevant information."
+                            className="w-full h-64 px-4 py-3 text-sm bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
+                            placeholder="Paste your resume text here...
+
+Include your skills, experience, education, and any other relevant information."
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                         />
-                        <div className="char-count">
+                        <div className="text-xs text-right text-slate-500 dark:text-slate-500">
                             {text.length} characters {text.length < 50 && '(minimum 50)'}
                         </div>
                     </div>
                 )}
 
+                {/* Error Message */}
                 {error && (
-                    <div className="error-message">
+                    <div className="mt-4 flex items-center gap-2 p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-sm text-red-600 dark:text-red-400">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
@@ -199,18 +227,22 @@ export default function ResumeModal({ onClose, onUpload, hasExisting }) {
                     </div>
                 )}
 
-                <div className="modal-actions">
-                    <button className="btn btn-secondary" onClick={onClose}>
+                {/* Actions */}
+                <div className="flex flex-col-reverse sm:flex-row gap-3 mt-8">
+                    <button
+                        className="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl font-medium text-sm transition-colors"
+                        onClick={onClose}
+                    >
                         {hasExisting ? 'Cancel' : 'Skip for now'}
                     </button>
                     <button
-                        className="btn btn-primary"
+                        className="flex-1 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow inline-flex items-center justify-center gap-2"
                         onClick={handleUpload}
                         disabled={!isValid || uploading}
                     >
                         {uploading ? (
                             <>
-                                <div className="spinner" />
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 Processing...
                             </>
                         ) : (
