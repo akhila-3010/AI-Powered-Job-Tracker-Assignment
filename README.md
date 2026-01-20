@@ -4,9 +4,11 @@ An intelligent job tracking system that fetches jobs from external APIs, uses AI
 
 ## 🚀 Live Demo
 
-**Live URL:** [Add your deployed URL here]
+**Live URL:** https://smart-job-tracker-ochre.vercel.app
 
-**Demo Credentials:** No authentication required - just upload your resume to get started!
+**Backend API:** https://smart-job-tracker-backend-r5wd.onrender.com
+
+**Demo Instructions:** Upload your resume to enable AI matching and see personalized job scores!
 
 ---
 
@@ -67,6 +69,13 @@ An intelligent job tracking system that fetches jobs from external APIs, uses AI
 - Match-based recommendations
 - Contextual job filtering
 - Suggested prompts for easy interaction
+- **Personality:** Meet Faraz, your friendly AI assistant with a warm personality!
+
+✅ **Bonus Features**
+- **Dark/Light Mode Toggle:** Seamless theme switching with localStorage persistence
+- **AI Personality:** Faraz introduces himself and handles general conversation beyond job search
+- **Mobile Optimized:** Compact UI elements for better mobile experience
+- **Responsive Design:** Works perfectly on all screen sizes
 
 ---
 

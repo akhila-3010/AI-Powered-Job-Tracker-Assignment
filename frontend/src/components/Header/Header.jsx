@@ -112,14 +112,15 @@ export default function Header({
                         {/* Resume Button */}
                         <button
                             onClick={onResumeClick}
-                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                            className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all
                 ${hasResume
                                     ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900"
                                     : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
                                 }
               `}
                         >
-                            {hasResume ? "Resume ✓" : "Upload Resume"}
+                            <span className="hidden sm:inline">{hasResume ? "Resume ✓" : "Upload Resume"}</span>
+                            <span className="sm:hidden">{hasResume ? "✓" : "Resume"}</span>
                         </button>
 
                         {/* Mobile Menu */}
