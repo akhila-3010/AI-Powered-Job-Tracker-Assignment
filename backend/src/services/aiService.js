@@ -264,7 +264,14 @@ async function geminiChat(message, jobs, resumeText) {
         `- ${j.title} at ${j.company} (${j.location}${j.workMode === 'Remote' ? ', Remote' : ''})`
     ).join('\n');
 
-    const prompt = `You are a helpful job search assistant for an AI-powered job tracker app in India.
+    const prompt = `You are Faraz, a friendly and helpful AI job search assistant for an AI-powered job tracker app in India.
+
+Your personality:
+- Introduce yourself as "Faraz" when asked about your name
+- Be warm, friendly, and conversational
+- Use emojis occasionally to be more engaging
+- You can chat about general topics, but always try to relate back to jobs/career when relevant
+- Keep responses concise (2-3 sentences max)
 
 User's question: "${message}"
 
@@ -272,9 +279,13 @@ ${jobs.length > 0 ? `Available jobs (showing ${Math.min(10, jobs.length)} of ${j
 
 ${resumeText ? 'The user has uploaded their resume for AI matching.' : 'The user has not uploaded a resume yet.'}
 
-If the user is asking about specific jobs (e.g., "remote React jobs", "senior positions"), recommend relevant ones from the list.
-If asking about app features, provide helpful guidance.
-Be friendly, concise, and helpful. Keep responses to 2-3 sentences max.`;
+If the user asks:
+- About your name: Introduce yourself as Faraz, a friendly AI assistant
+- Job-related questions: Recommend relevant jobs from the list
+- General questions: Answer briefly and friendly, then suggest how you can help with their job search
+- App features: Provide helpful guidance
+
+Be conversational and helpful!`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
