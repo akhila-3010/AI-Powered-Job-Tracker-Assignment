@@ -14,7 +14,6 @@ export default function Header({
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [savedJobsOpen, setSavedJobsOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
 
     // Mock notifications data
     const notifications = [
@@ -34,12 +33,6 @@ export default function Header({
     const handleTabChange = (tab) => {
         onTabChange(tab);
         setMobileMenuOpen(false);
-    };
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        // TODO: Connect to job filtering logic
-        console.log("Search query:", searchQuery);
     };
 
     // Tooltip component
@@ -65,32 +58,16 @@ export default function Header({
                     </span>
                 </div>
 
-                {/* Search Bar - Desktop */}
-                <form onSubmit={handleSearch} className="hidden md:block flex-shrink-0">
-                    <div className="relative">
-                        <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input
-                            type="text"
-                            placeholder="Search jobs"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-[200px] lg:w-[280px] h-[34px] pl-9 pr-3 text-sm bg-[#EDF3F8] dark:bg-[#38434F] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-0 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        />
-                    </div>
-                </form>
-
                 {/* Left-Aligned Navigation Icons */}
-                <nav className="hidden md:flex items-center flex-1 gap-0.5 ml-2">
+                <nav className="hidden md:flex items-center flex-1 gap-0.5 ml-4">
 
                     {/* Jobs Icon */}
                     <Tooltip text="Jobs">
                         <button
                             onClick={() => onTabChange("jobs")}
                             className={`relative flex flex-col items-center justify-center h-[52px] px-3 transition-all duration-150 ${activeTab === "jobs"
-                                    ? "text-gray-900 dark:text-white"
-                                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                                ? "text-gray-900 dark:text-white"
+                                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                                 }`}
                         >
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -212,8 +189,8 @@ export default function Header({
                         <button
                             onClick={() => onTabChange("applications")}
                             className={`relative flex flex-col items-center justify-center h-[52px] px-3 transition-all duration-150 ${activeTab === "applications"
-                                    ? "text-gray-900 dark:text-white"
-                                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                                ? "text-gray-900 dark:text-white"
+                                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                                 }`}
                         >
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -235,8 +212,8 @@ export default function Header({
                     <button
                         onClick={onResumeClick}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${hasResume
-                                ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-800"
-                                : "bg-blue-600 text-white hover:bg-blue-700 border border-blue-600"
+                            ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-800"
+                            : "bg-blue-600 text-white hover:bg-blue-700 border border-blue-600"
                             }`}
                     >
                         {hasResume ? (
@@ -254,13 +231,6 @@ export default function Header({
 
                 {/* Mobile Right Section */}
                 <div className="flex md:hidden items-center gap-2">
-                    {/* Search Icon - Mobile */}
-                    <button className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-
                     {/* Mobile Menu Hamburger */}
                     <button
                         className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-150"
@@ -283,8 +253,8 @@ export default function Header({
                                 key={tab}
                                 onClick={() => handleTabChange(tab)}
                                 className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === tab
-                                        ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                    ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                                     }`}
                             >
                                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
