@@ -52,9 +52,9 @@ export default function FilterPanel({ filters, onFilterChange, hasResume }) {
         filters.workMode !== 'all' || filters.location || filters.minScore > 0
 
     return (
-        <aside className="h-fit sticky top-24 bg-white dark:bg-[#1D1F23] border border-slate-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-6 space-y-6 max-h-[calc(100vh-7rem)] overflow-y-auto">
+        <aside className="h-fit sticky top-24 bg-white dark:bg-[#1D1F23] border border-gray-200 dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-6 space-y-6 max-h-[calc(100vh-7rem)] overflow-y-auto shadow-sm">
             {/* Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-[rgba(255,255,255,0.06)]">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-[#E4E6EB]">Filters</h2>
                 {hasActiveFilters && (
                     <button

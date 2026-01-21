@@ -165,6 +165,8 @@ export default function JobFeed({
                 <JobDetailModal
                     job={selectedJob}
                     onClose={() => setSelectedJob(null)}
+                    onApply={onApply}
+                    isApplied={isApplied(selectedJob.id)}
                 />
             )}
         </>

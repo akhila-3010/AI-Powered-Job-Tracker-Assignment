@@ -1,4 +1,4 @@
-export default function JobDetailModal({ job, onClose }) {
+export default function JobDetailModal({ job, onClose, onApply, isApplied }) {
     if (!job) return null
 
     const formatDate = (dateStr) => {
@@ -230,12 +230,24 @@ export default function JobDetailModal({ job, onClose }) {
 
                     {/* Action Buttons */}
                     <div className="flex flex-col-reverse sm:flex-row gap-2 md:gap-3 pt-4">
-                        <button
-                            className="flex-1 px-4 md:px-6 py-2.5 md:py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow"
-                            onClick={() => window.open(job.applyUrl, '_blank')}
-                        >
-                            Apply Now
-                        </button>
+                        {isApplied ? (
+                            <div className="flex-1 px-4 md:px-6 py-2.5 md:py-3 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 dark:border-green-600 text-green-700 dark:text-green-400 rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <polyline points="20,6 9,17 4,12" />
+                                </svg>
+                                Applied
+                            </div>
+                        ) : (
+                            <button
+                                className="flex-1 px-4 md:px-6 py-2.5 md:py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow"
+                                onClick={() => {
+                                    onApply(job)
+                                    onClose()
+                                }}
+                            >
+                                Apply Now
+                            </button>
+                        )}
                         <button
                             className="sm:flex-none px-4 md:px-6 py-2.5 md:py-3 bg-slate-100 dark:bg-[#1D1F23] text-slate-700 dark:text-[#E4E6EB] hover:bg-slate-200 dark:hover:bg-[#252729] rounded-xl font-medium text-sm transition-colors border border-slate-300 dark:border-[rgba(255,255,255,0.06)]"
                             onClick={onClose}

@@ -51,13 +51,13 @@ export default function JobCard({ job, compact, index, onApply, applied, onJobCl
         <article
             className={`
                 bg-white dark:bg-[#1D1F23]
-                border border-slate-200 dark:border-[rgba(255,255,255,0.06)]
+                border border-gray-200 dark:border-[rgba(255,255,255,0.06)]
                 rounded-2xl
                 ${compact ? 'p-4' : 'p-5 md:p-6'}
                 transition-all duration-300 ease-out
-                hover:border-indigo-300 dark:hover:border-[rgba(255,255,255,0.12)]
-                hover:bg-slate-50 dark:hover:bg-[#252729]
-                hover:shadow-lg hover:shadow-indigo-500/5
+                hover:border-gray-300 dark:hover:border-[rgba(255,255,255,0.12)]
+                hover:bg-gray-50 dark:hover:bg-[#252729]
+                shadow-sm hover:shadow-md
                 hover:-translate-y-1
                 flex flex-col gap-3 md:gap-4
                 ${index !== undefined ? 'animate-fade-in' : ''}

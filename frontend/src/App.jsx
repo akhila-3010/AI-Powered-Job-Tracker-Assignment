@@ -323,10 +323,10 @@ function App() {
 
   return (
     <>
-      {/* Animated Background - renders behind all content */}
-      <AnimatedBackground enabled={true} />
+      {/* Animated Background - only in dark mode */}
+      <AnimatedBackground enabled={isDarkMode} />
 
-      <div className="min-h-screen flex flex-col text-slate-900 dark:text-slate-100 transition-colors duration-300" style={{ backgroundColor: isDarkMode ? '#121212' : 'transparent' }}>
+      <div className="min-h-screen flex flex-col text-slate-900 dark:text-slate-100 transition-colors duration-300 bg-[#F3F2EF] dark:bg-[#121212]">
         <Header
           activeTab={activeTab}
           onTabChange={setActiveTab}
