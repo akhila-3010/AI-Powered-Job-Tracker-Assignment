@@ -137,8 +137,8 @@ export default function AISidebar({ onClose, onJobSelect }) {
                             )}
                             <div className={`flex-1 max-w-[80%] ${msg.role === 'user' ? 'flex flex-col items-end' : ''}`}>
                                 <div className={`p-3 rounded-2xl ${msg.role === 'user'
-                                        ? 'bg-indigo-500 text-white'
-                                        : 'bg-slate-100 dark:bg-slate-808/50 text-slate-900 dark:text-slate-100'
+                                    ? 'bg-indigo-500 text-white'
+                                    : 'bg-slate-100 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100'
                                     }`}>
                                     <p className="text-sm leading-relaxed">{msg.content}</p>
                                 </div>
@@ -147,7 +147,7 @@ export default function AISidebar({ onClose, onJobSelect }) {
                                 {msg.jobs && msg.jobs.length > 0 && (
                                     <div className="mt-3 space-y-2">
                                         {msg.jobs.map(job => (
-                                            <div key={job.id} className="bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700/50 rounded-xl p-3 space-y-2">
+                                            <div key={job.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 rounded-xl p-3 space-y-2">
                                                 <div className="flex items-start gap-3">
                                                     <img
                                                         src={job.companyLogo}
@@ -167,7 +167,7 @@ export default function AISidebar({ onClose, onJobSelect }) {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
+                                                <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                                                     <span>{job.location}</span>
                                                     <span>•</span>
                                                     <span>{job.workMode}</span>
