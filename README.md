@@ -6,7 +6,7 @@ An intelligent job tracking system that fetches jobs from external APIs, matches
 
 ---
 
-## 🔗 Live Demo
+## Live Demo
 
 - **Frontend**: https://smart-job-tracker-ochre.vercel.app
 - **Backend API**: https://smart-job-tracker-backend-r5wd.onrender.com
@@ -103,7 +103,7 @@ Data Flow
 
 ```bash
 git clone https://github.com/akhila-3010/AI-Powered-Job-Tracker-Assignment.git
-cd smart-job-tracker
+cd AI-Powered-Job-Tracker-Assignment
 
 # Backend
 cd backend
@@ -121,11 +121,11 @@ npm run dev
 
 Environment Variables
 
-PORT=3001
-JOB_API_KEY=your_key
-LLM_API_KEY=your_key
-REDIS_URL=optional
-FRONTEND_URL=http://localhost:5173
+# PORT=3001
+# JOB_API_KEY=your_key
+# LLM_API_KEY=your_key
+# REDIS_URL=optional
+# FRONTEND_URL=http://localhost:5173
 
 
 ---
@@ -269,7 +269,7 @@ The system is future-ready for database persistence and background queues.
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 Detailed references are available in the `/docs` folder:
 - **API.md** – API endpoints and request/response details
@@ -277,13 +277,14 @@ Detailed references are available in the `/docs` folder:
 
 ---
 
-## 📝 License
+## License
 
 MIT License
 
 ---
 
-## 📧 Contact
+## Contact
 
 - **GitHub**: https://github.com/akhila-3010  
+
 
