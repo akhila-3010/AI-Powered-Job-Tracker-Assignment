@@ -121,11 +121,11 @@ npm run dev
 
 Environment Variables
 
-# PORT=3001
-# JOB_API_KEY=your_key
-# LLM_API_KEY=your_key
-# REDIS_URL=optional
-# FRONTEND_URL=http://localhost:5173
+. PORT=3001
+. JOB_API_KEY=your_key
+. LLM_API_KEY=your_key
+. REDIS_URL=optional
+. FRONTEND_URL=http://localhost:5173
 
 
 ---
@@ -143,7 +143,7 @@ LangChain is used to power intelligent job–resume matching by:
 
 Each resume–job pair is processed **once** after resume upload and the results are cached to avoid repeated AI calls.
 
----
+
 
 ### LangGraph – AI Assistant
 
@@ -286,5 +286,6 @@ MIT License
 ## Contact
 
 - **GitHub**: https://github.com/akhila-3010  
+
 
 
