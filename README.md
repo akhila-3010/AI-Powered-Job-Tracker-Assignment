@@ -119,15 +119,6 @@ npm run dev
 
 **Open**: http://localhost:5173
 
-Environment Variables
-
-. PORT=3001
-. JOB_API_KEY=your_key
-. LLM_API_KEY=your_key
-. REDIS_URL=optional
-. FRONTEND_URL=http://localhost:5173
-
-
 ---
 
 ## c) LangChain & LangGraph Usage
@@ -286,6 +277,7 @@ MIT License
 ## Contact
 
 - **GitHub**: https://github.com/akhila-3010  
+
 
 
 
