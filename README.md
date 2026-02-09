@@ -10,35 +10,13 @@ An intelligent job tracking system that fetches jobs from external APIs, matches
 
 - **Frontend**: https://smart-job-tracker-ochre.vercel.app
 - **Backend API**: https://smart-job-tracker-backend-r5wd.onrender.com
-- **GitHub Repository**: https://github.com/Sarfarazsfz/smart-job-tracker
+- **GitHub Repository**: https://github.com/akhila-3010
 
 **Demo Note**: Upload a resume to enable AI-based job matching and personalized match scores.
 
 ---
 
-## ✨ Key Features
-
-### Core Functionality
-- Job feed powered by an external job API (India-focused listings)
-- Resume upload (PDF/TXT) with automatic text extraction
-- AI-based job–resume matching with percentage scores
-- **Best Matches for You** section highlighting top matches
-- Smart application tracking with confirmation popup
-- Conversational AI assistant for job discovery and guidance
-- Fully responsive UI (mobile, tablet, desktop)
-
-### Filters (Assignment Requirement)
-- **Role / Job Title** search
-- **Skills** (multi-select: React, Node.js, Python, etc.)
-- **Date Posted** (Last 24 hours, Last week, Last month, Any time)
-- **Job Type** (Full-time, Part-time, Contract, Internship)
-- **Work Mode** (Remote, Hybrid, On-site)
-- **Location** (City / Region)
-- **Match Score** (High >70%, Medium 40–70%, All)
-
----
-
-## 🏗️ Project Architecture
+## a) Architecture Diagram
 
 The application follows a clean three-tier architecture:
 
@@ -98,86 +76,23 @@ graph TB
     JobService --> Cache
     AIService --> AI
 ```
+Data Flow
+
+. Frontend requests job data
+
+. Backend fetches jobs from external API (cached)
+
+. Resume is uploaded and parsed
+
+. LangChain calculates match scores
+
+. LangGraph powers AI assistant responses
+
+. Results returned to frontend for filtering and display
 
 ---
 
-## 🤖 AI Matching Logic
-
-### Overview
-The system calculates a job–resume match score (0–100%) using a weighted approach:
-- **Skill Match**: 45%
-- **Experience Level**: 30%
-- **Title Relevance**: 25%
-
-### How It Works
-1. Extract skills and keywords from resume and job description
-2. Calculate skill overlap
-3. Detect experience level alignment
-4. Match job title relevance
-5. Combine weighted scores into a final percentage
-
-### Match Categories
-- **High (70–100%)** – Strong match
-- **Medium (40–69%)** – Moderate match
-- **Low (<40%)** – Weak match
-
-Match scores are calculated once after resume upload and reused across filters.
-
----
-
-## 🎯 Smart Application Popup (Critical Thinking)
-
-**Problem**: Applications happen on external job portals (LinkedIn, company sites).
-
-**Constraint**: Browser security prevents tracking actions on external websites.
-
-**Solution**: When a user returns to the app tab after clicking Apply, a popup asks:
-- Yes, Applied
-- Applied Earlier
-- No, Just Browsing
-
-This approach ensures accurate application tracking without violating user privacy.
-
----
-
-## ⚡ Caching & Performance
-
-- Jobs fetched in batches of 50
-- Cache-first strategy with 1-hour TTL
-- Jobs fetched only when cache expires
-- Filters and search applied client-side
-- Reduces API usage while keeping listings fresh
-
----
-
-## 📈 Scalability Considerations
-
-- Handles 100 jobs efficiently using parallel processing
-- Architecture supports scaling to 10,000 users
-- Stateless backend design
-- Redis used for fast access and caching
-- Clear migration path to PostgreSQL + background job queues
-
----
-
-## ⚖️ Tradeoffs & Limitations
-
-### Current Limitations
-- No authentication (single-user demo model)
-- Redis / in-memory storage (not a permanent database)
-- AI scoring latency depends on external APIs
-- Single job data source
-
-### Future Improvements
-- User authentication (OAuth)
-- Persistent database (PostgreSQL)
-- Background job queue for AI scoring
-- Multi-source job aggregation
-- Email alerts and saved searches
-
----
-
-## 🛠️ Setup Instructions
+## b) Setup Instructions
 
 ### Prerequisites
 - Node.js 18+
@@ -187,7 +102,7 @@ This approach ensures accurate application tracking without violating user priva
 ### Run Locally
 
 ```bash
-git clone https://github.com/Sarfarazsfz/smart-job-tracker.git
+git clone https://github.com/akhila-3010/AI-Powered-Job-Tracker-Assignment.git
 cd smart-job-tracker
 
 # Backend
@@ -203,6 +118,154 @@ npm run dev
 ```
 
 **Open**: http://localhost:5173
+
+Environment Variables
+
+PORT=3001
+JOB_API_KEY=your_key
+LLM_API_KEY=your_key
+REDIS_URL=optional
+FRONTEND_URL=http://localhost:5173
+
+
+---
+
+## c) LangChain & LangGraph Usage
+
+### LangChain – Job Matching
+
+LangChain is used to power intelligent job–resume matching by:
+
+- Extracting skills from uploaded resumes
+- Extracting requirements from job descriptions
+- Comparing semantic similarity using LLM embeddings
+- Generating structured and explainable match scores
+
+Each resume–job pair is processed **once** after resume upload and the results are cached to avoid repeated AI calls.
+
+---
+
+### LangGraph – AI Assistant
+
+LangGraph is used to implement a conversational AI assistant with predictable, stateful behavior.
+
+#### Graph Structure
+- **Start Node**: Receives user query
+- **Intent Node**: Detects intent (job search, filter update, career advice)
+- **Tool Node**: Calls backend tools (job search, filter updates)
+- **Response Node**: Generates the final AI response
+
+#### Tool / Function Calling
+- Update UI filters (skills, location, job type)
+- Trigger job searches
+- Explain job–resume match scores
+
+#### Prompt Design
+- System prompt enforces a career-assistant persona
+- User context includes current filters and resume summary
+- Responses are constrained to short, actionable outputs
+
+#### State Management
+LangGraph state stores:
+- Active filters
+- Resume summary
+- Current job context
+
+This prevents repeated explanations and reduces hallucinations.
+
+---
+
+## d) AI Matching Logic
+
+### Scoring Approach
+- **Skill Match**: 45%
+- **Experience Alignment**: 30%
+- **Job Title Relevance**: 25%
+
+Final Score = Weighted average (0–100%)
+
+### Why It Works
+- Skills dominate relevance and job fit
+- Experience ensures correct seniority alignment
+- Title relevance prevents misleading matches
+
+### Performance Considerations
+- Match scores calculated once per resume upload
+- Cached results reused across filters
+- No repeated LLM calls during normal browsing
+
+---
+
+## e) Popup Flow Design (Critical Thinking)
+
+### Why This Design
+Job applications redirect users to external portals where application completion cannot be tracked due to browser security restrictions.
+
+### Solution
+When the user returns to the app, a confirmation popup asks:
+- Applied
+- Applied Earlier
+- Just Browsing
+
+### Edge Cases Handled
+- Multiple apply clicks
+- Tab switching
+- User abandoning application midway
+
+### Alternatives Considered
+- Browser extensions (rejected due to complexity)
+- Email tracking (privacy concerns)
+- Mandatory confirmation before redirect (poor UX)
+
+The chosen approach balances **accuracy, privacy, and user experience**.
+
+---
+
+## f) AI Assistant UI Choice
+
+### Sidebar / Chat Bubble Hybrid
+
+### UX Reasoning
+- Non-intrusive and lightweight
+- Always accessible during browsing
+- Does not block job listings
+- Familiar chat-based interaction model
+
+The assistant acts as a **guide**, not a distraction.
+
+---
+
+## g) Scalability
+
+### Handling 100+ Jobs
+- Client-side filtering
+- Cached job batches
+- Parallel AI matching
+
+### Handling 10,000 Users
+- Stateless backend architecture
+- Redis caching
+- Horizontal scaling ready
+- External APIs safely rate-limited
+
+The system is future-ready for database persistence and background queues.
+
+---
+
+## h) Tradeoffs
+
+### Known Limitations
+- No authentication (single-user demo model)
+- Redis / in-memory storage (not a permanent database)
+- AI scoring latency depends on external APIs
+- Single job data source
+
+### Future Improvements
+- User authentication (OAuth)
+- Persistent database (PostgreSQL)
+- Background job queue for AI scoring
+- Multi-source job aggregation
+- Email alerts and saved searches
 
 ---
 
@@ -222,5 +285,5 @@ MIT License
 
 ## 📧 Contact
 
-- **GitHub**: https://github.com/Sarfarazsfz
-- **LinkedIn**: https://www.linkedin.com/in/faraz4237/
+- **GitHub**: https://github.com/akhila-3010  
+
